@@ -1,0 +1,122 @@
+#include "line.h"
+
+void init (void)
+{
+  glClearColor (0.0, 0.0, 0.0, 0.0); // black background
+	glMatrixMode (GL_PROJECTION);
+	gluOrtho2D (0.0, 1200.0, 0.0, 600.0); // set the x-coordinate from 0 to 600 and y-coordinate from 0 to 600
+}
+
+void Key(unsigned char c, int x, int y)
+{
+     switch (c){
+ case 27:
+    exit(0);
+        }
+}
+
+void setPixel (GLint x, GLint y)
+{
+	glColor3f (1.0, 1.0, 1.0); 
+	glBegin (GL_POINTS);
+		glVertex2i (x, y);	
+	glEnd ();
+	glFlush ();
+}
+
+// bresenham line drawing algorithm
+void bresenhamAlg (int x0, int y0, int x1, int y1)
+{
+	int dx = abs (x1 - x0);
+	int dy = abs (y1 - y0);
+	int x, y;
+
+		if (dx >= dy){ //slope |m| <= 1.0;
+			int e = (dy << 1) - dx;
+			int inc1 = dy << 1;
+			int inc2 = (dy - dx) << 1;
+			if (x0 < x1) { 
+				x = x0;
+				y = y0;
+			}
+			else { 
+				x = x1;
+				y = y1;
+				x1 = x0;
+				y1 = y0;
+			}
+			setPixel (x, y); 
+			while (x < x1) {
+				if (e < 0)
+					e += inc1;
+				else {
+					if (y < y1) {
+						y++;
+						e += inc2;
+					} else {
+						y--;
+						e += inc2;
+					}
+				}
+				x++;
+				setPixel (x, y);
+			}
+		}
+		else { //slope |m| > 1.0;
+			int e = (dx << 1) - dy;
+			int inc1 = dx << 1;
+			int inc2 = (dx - dy) << 1;
+			if (y0 < y1) { 
+				x = x0;
+				y = y0;
+			}
+			else { 
+				x = x1;
+				y = y1;
+				y1 = y0;
+				x1 = x0;
+			}
+			setPixel (x, y); 
+			while (y < y1) {
+				if (e < 0)
+					e += inc1;
+				else {
+					if (x > x1){
+						x--;
+						e += inc2;
+					} else {
+						x++;
+						e += inc2;
+					}
+				}
+				y++;
+				setPixel (x, y);
+			}
+		}
+}
+
+void drawLine (void)
+{
+    for (int k=0; k < 4; k++)
+    {
+        bresenhamAlg(square[k][0],square[k][1],square[k+1][0],square[k+1][1]);
+        //bresenhamAlg(50,50,50,200);
+    }
+}
+
+int main (int argc, char** argv)
+{
+	glutInit (&argc, argv);
+	glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
+	glutInitWindowPosition (0, 0);
+	glutInitWindowSize (1200, 600);
+	glutCreateWindow ("Screen");
+
+	init (); // execute initialization procedure
+
+	glutDisplayFunc (drawLine);
+	glutKeyboardFunc(Key);
+	glutMainLoop ();
+
+	return 0;
+}
