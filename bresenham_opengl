@@ -4,7 +4,7 @@ void init (void)
 {
   glClearColor (0.0, 0.0, 0.0, 0.0); // black background
 	glMatrixMode (GL_PROJECTION);
-	gluOrtho2D (0.0, 1200.0, 0.0, 600.0); // set the x-coordinate from 0 to 600 and y-coordinate from 0 to 600
+	gluOrtho2D (0.0, 1200.0, 0.0, 600.0); 
 }
 
 void Key(unsigned char c, int x, int y)
@@ -99,8 +99,8 @@ void drawLine (void)
 {
     for (int k=0; k < 4; k++)
     {
-        bresenhamAlg(square[k][0],square[k][1],square[k+1][0],square[k+1][1]);
-        //bresenhamAlg(50,50,50,200);
+        //bresenhamAlg(square[k][0],square[k][1],square[k+1][0],square[k+1][1]);
+        bresenhamAlg(50,50,50,200);
     }
 }
 
@@ -110,9 +110,9 @@ int main (int argc, char** argv)
 	glutInitDisplayMode (GLUT_SINGLE | GLUT_RGB);
 	glutInitWindowPosition (0, 0);
 	glutInitWindowSize (1200, 600);
-	glutCreateWindow ("Screen");
+	glutCreateWindow ("Test");
 
-	init (); // execute initialization procedure
+	init (); 
 
 	glutDisplayFunc (drawLine);
 	glutKeyboardFunc(Key);
