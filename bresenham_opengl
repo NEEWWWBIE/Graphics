@@ -21,7 +21,7 @@ void setPixel (GLint x, GLint y)
 	glBegin (GL_POINTS);
 		glVertex2i (x, y);	
 	glEnd ();
-	glFlush ();
+	//glFlush (); doing this slow things down 
 }
 
 // bresenham line drawing algorithm
@@ -93,6 +93,7 @@ void bresenhamAlg (int x0, int y0, int x1, int y1)
 				setPixel (x, y);
 			}
 		}
+		glutSwapBuffers();
 }
 
 void drawLine (void)
