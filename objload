@@ -1,0 +1,119 @@
+#include "objload.h"
+
+bool loadOBJ(const char * path,vector <_3dpoint> &out_vertices,vector <_2dpoint> &out_uvs,vector <_3dpoint> &out_normals)
+{
+    //vector <unsigned int> vertexIndices, uvIndices, normalIndices;
+    vector <_3dpoint> temp_vertices;
+    vector <_2dpoint> temp_uvs;
+    vector <_3dpoint> temp_normals;
+
+    FILE *file = fopen(path,"r");
+    if (file == NULL)
+    {
+        cout<<"file not found";
+        return false;
+    }
+    while (true)
+    {
+        char first_word[10];
+        int res = fscanf(file, "%s", first_word);
+        if (res == EOF)
+            break; // end of file
+        if (strcmp(first_word,"v") == 0)
+        {
+            _3dpoint vertex;
+            fscanf(file, "%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
+            temp_vertices.push_back(vertex);
+        }
+        else if (strcmp(first_word,"vt") == 0)
+        {
+            _2dpoint vertex; // its uv // laziness
+            fscanf(file,"%f %f %f\n", &vertex.x, &vertex.y);
+            temp_uvs.push_back(vertex);
+        }
+        else if (strcmp(first_word,"vn") == 0)
+        {
+            _3dpoint vertex; // normals // laziness
+            fscanf(file,"%f %f %f\n", &vertex.x, &vertex.y, &vertex.z);
+            temp_normals.push_back(vertex);
+        }
+        else if (strcmp(first_word,"f") == 0 )
+        {
+            //string vertex1,vertex2,vertex3;
+            unsigned int vertexIndex[3],uvIndex[3],normalIndex[3];
+            int Count = fscanf(file,"%d/%d/%d %d/%d/%d %d/%d/%d\n", &vertexIndex[0],&uvIndex[0],&normalIndex[0], &vertexIndex[1],&uvIndex[1],&normalIndex[1], &vertexIndex[2],&uvIndex[2],&normalIndex[2]) ;
+            if (Count != 9)
+            {
+                cout<<"unable to read";
+                return false;
+            }
+            vector <unsigned int> vertexIndices, uvIndices, normalIndices;
+
+            vertexIndices.push_back(vertexIndex[0]);
+            vertexIndices.push_back(vertexIndex[1]);
+            vertexIndices.push_back(vertexIndex[2]);
+            uvIndices.push_back(uvIndex[0]);
+            uvIndices.push_back(uvIndex[1]);
+            uvIndices.push_back(uvIndex[2]);
+            normalIndices.push_back(normalIndex[0]);
+            normalIndices.push_back(normalIndex[1]);
+            normalIndices.push_back(normalIndex[2]);
+
+            // now we shall store the temporary vertices in proper way into out_vertices
+
+            for (int i = 0; i < vertexIndices.size(); i++)
+            {
+                unsigned int vertexIndex = vertexIndices[i];
+                _3dpoint vertex = temp_vertices[vertexIndex - 1];
+                out_vertices.push_back(vertex);
+            }
+            for (int i = 0; i < uvIndices.size(); i++)
+            {
+                unsigned int uvIndex = uvIndices[i];
+                _2dpoint uv = temp_uvs[uvIndex - 1];
+                out_uvs.push_back(uv);
+            }
+            for (int i = 0; i < normalIndices.size(); i++)
+            {
+                unsigned int normalIndex = normalIndices[i];
+                _3dpoint normal = temp_normals[normalIndex - 1];
+                out_normals.push_back(normal);
+            }
+        } // end "f"
+    }// end while
+}
+
+void init()
+{
+    glClearColor(1.0,1.0,1.0,1.0);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluOrtho2D(0.0,800.0,0.0,640.0);
+}
+
+void Display()
+{
+    vector <_3dpoint> vertices;
+    vector <_2dpoint> uvs;
+    vector <_3dpoint> normals;
+    bool res = loadOBJ("sphere.obj", vertices, uvs, normals);
+    
+    // now what do i do with the vertices ???
+
+}
+
+int main(int argc, char** argv)
+{
+    glutInit(&argc,argv);
+    glutInitDisplayMode(GLUT_SINGLE|GLUT_RGB);
+    glutInitWindowSize(800,650);
+
+    glutCreateWindow("Hope");
+    glutDisplayFunc(Display);
+
+    init();
+    glutMainLoop();
+
+    return 0;
+}
+
